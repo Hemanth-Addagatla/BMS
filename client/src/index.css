@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+body{
+  background-color: black;
+}
+
+.group-hover\:translate-x-1 {
+    &:is(:where(.group):hover *) {
+        @media (hover: hover) {
+            --tw-translate-x: var(--spacing) /* 0.25rem = 4px */;
+            translate: var(--tw-translate-x) var(--tw-translate-y);
+        }
+    }
+}
+@property --tw-translate-x {
+    syntax: "*";
+    inherits: false;
+    initial-value: 0;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.mt-10 {
+    margin-top: calc(var(--spacing) * 10) /* 2.5rem = 40px */;
+}
+
+.no-scrollbar{
+    scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+}
+
+::-webkit-calendar-picker-indicator{
+    filter: invert(1);
+}
