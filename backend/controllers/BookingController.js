@@ -2,8 +2,10 @@
 import Booking from "../models/Booking.js";
 import Show from "../models/Show.js"
 import stripe from "stripe"
+import {inngest} from '../inngest/index.js'
 
 const checkSeatAvailability = async (showId, selectedSeats) => {
+    
     try {
         const showData = await Show.findById(showId)
         if (!showData) return false;
