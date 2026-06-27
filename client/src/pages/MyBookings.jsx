@@ -5,6 +5,7 @@ import isoTimeFormat from '../lib/isoTimeFormat';
 import { dateFormat } from '../lib/dateFormat';
 import { BringToFront } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { Link } from 'react-router-dom';
 
 const MyBookings = () => {
   const currency = import.meta.env.VITE_CURRENCY
@@ -21,6 +22,7 @@ const MyBookings = () => {
       const {data} = await axios.get('/api/user/bookings',{
         headers:{Authorization: `Bearer ${await getToken()}`}
       })
+      console.log(data.bookings);
       if(data.success){
         setBookings(data.bookings)
       }
@@ -52,7 +54,7 @@ const MyBookings = () => {
           <div className='flex flex-col md:items-end md:text-right justify-between p-4'>
             <div className='flex gap-4'>
               <p className='font-semibold text-lg'>{currency}{item.amount}</p>
-              {!item.isPaid && <button className='bg-rose-400 px-4 py-1.5 mb-3 text-sm rounded-full font-medium cursor-pointer'>Pay Now</button>}
+              {!item.isPaid && <Link to={item.paymentLink} className='bg-rose-400 px-4 py-1.5 mb-3 text-sm rounded-full font-medium cursor-pointer'>Pay Now</Link>}
             </div>
             <div className='text-sm'>
               <p>
