@@ -6,9 +6,11 @@ import { SearchIcon, TicketIcon, XIcon } from 'lucide-react';
 import { useClerk, useUser } from '@clerk/clerk-react';
 import { UserButton } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
 
 
 const Navbar = () => {
+    const {favouriteMovies} = useAppContext();
     const {user} = useUser();
     const {openSignIn ,openSignUp} = useClerk();
     const navigate = useNavigate();
@@ -24,7 +26,7 @@ const Navbar = () => {
             <Link onClick={() => scrollTo(0, 0)} to="/">Home</Link>
             <Link onClick={() => scrollTo(0, 0)} to="/movies">Movies</Link>
             <Link onClick={() => scrollTo(0, 0)} to="/">Theatres</Link>
-            <Link onClick={() => scrollTo(0, 0)} to="/favourite">Favourites</Link>
+            {favouriteMovies.length > 0 &&  <Link onClick={() => scrollTo(0, 0)} to="/favourite">Favourites</Link>}
             <Link onClick={() => scrollTo(0, 0)} to="/">Releases</Link>
         </div>
 

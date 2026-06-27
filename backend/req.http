@@ -1,0 +1,26 @@
+##get nowplaying 
+GET http://localhost:3000/api/show/now-playing 
+
+### adding the movie to the database
+POST http://localhost:3000/api/show/add
+Content-Type: application/json
+
+{
+    "movieId" : "1339713",
+    "showsInput":[
+        {
+            "date":"2027-06-05",
+            "time":["16:00"]
+
+        }
+    ],
+    "showPrice":400
+}
+
+### get all shows 
+GET http://localhost:3000/api/show/all
+
+
+### get show by Id
+GET http://localhost:3000/api/show/1339713
+

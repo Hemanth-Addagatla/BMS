@@ -1,12 +1,14 @@
 import { CircleIcon, StarIcon } from 'lucide-react';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
 
 const MovieCard = ({movie}) => {
     const navigate  = useNavigate();
+    const {image_url} = useAppContext();
   return (
     <div onClick={() => {navigate(`/movies/${movie._id}`); scrollTo(0,0)}} className="w-70  rounded-2xl overflow-hidden bg-slate-800 hover:-translate-y-1 transition duration-300 cursor-pointer px-2 py-3 ">
-        <img src={movie.poster_path} alt={movie.title} className="rounded-lg object-cover object-top h-60 w-full"/>
+        <img src={image_url+movie.poster_path} alt={movie.title} className="rounded-lg object-cover object-top h-60 w-full"/>
         <p className='font-semibold mt-2 p-2'>{movie.title}</p>
  
         <div className='text-gray-400 text-sm font-semibold flex items-center gap-2 px-2 '>

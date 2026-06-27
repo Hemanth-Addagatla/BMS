@@ -5,6 +5,10 @@ import connectDB from './configs/db.js';
 import { clerkMiddleware } from '@clerk/express'
 import { serve } from "inngest/express";
 import { inngest, functions } from "./inngest/index.js"
+import showRouter from './routes/showRoute.js';
+import bookingRouter from './routes/Bookingroutes.js';
+import adminRouter from './routes/adminRoutes.js';
+import userRouter from './routes/UserRoutes.js';
 
 const app = express();
 const port = 3000;
@@ -20,5 +24,10 @@ app.use(clerkMiddleware())
 // API routes
 app.get('/',(req,res)=>res.send('Server is live!'))
 app.use("/api/inngest", serve({ client: inngest, functions }));
+app.use('/api/show',showRouter)
+app.use('/api/bookings',bookingRouter)
+app.use('/api/admin',adminRouter)
+app.use('/api/user',userRouter)
+
 
 app.listen(port,()=>console.log(`Server listening at http://localhost:${port}`));

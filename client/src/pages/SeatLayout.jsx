@@ -5,15 +5,18 @@ import { ArrowRightIcon, ClockIcon } from 'lucide-react';
 import { dummyShowsData , dummyDateTimeData, assets } from '../assets/assets';
 import isoTimeFormat from '../lib/isoTimeFormat';
 import toast from 'react-hot-toast';
+import { useAppContext } from '../context/AppContext';
 const SeatLayout = () => {
   const groupRows = [["A","B"],["C","D"],["E","F"],["G","H"],["I","J"]]
   const {id,date} = useParams();
   const [selectedSeats,setSelectedSeats] = useState([]);
   const [selectedTime,setSelectedTime] = useState(null);
   const [show,setShow] = useState(null);
+  const [occupiedSeats,setOccupiedSeats] = useState([])
   
   const navigate = useNavigate();
-
+  const {axios,getToken,user} = useAppContext();
+  // console.log(getToken());
   const handleProceed=()=>{
     if(selectedSeats.length===0){
       return toast("Please Select a Seat")
@@ -25,18 +28,42 @@ const SeatLayout = () => {
   }
 
   const getShow = async()=>{
-      const show = dummyShowsData.find(show=> show._id === id)
-      if(show){
-        setShow({
-          movie:show,
-          dateTime: dummyDateTimeData
-        })
+    try {
+      const {data} = await axios.get(`/api/show/${id}`)
+      if(data.success){
+        setShow(data)
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+      
+    }
+    
+    const getOccupied = async()=>{
+      try {
+        const {data} =  await axios.get(`/api/bookings/seats/${selectedTime.showId}`)
+
+        if(data.success){
+          setOccupiedSeats(data.occupiedSeats)
+        }else{
+          toast.error(data.message)
+        }
+      } catch (error) {
+        console.log(error); 
       }
     }
     useEffect(()=>{
       getShow();
-    },[id])
+    },[])
 
+    useEffect(()=>{
+      if(selectedTime){
+        getOccupied();
+        console.log("Occupied Seats", occupiedSeats);
+      }
+    },[selectedTime])
+    
     const handleSeatClick = (seatId)=> {
       if(!selectedTime){
         return toast("Please select the time first")
@@ -44,7 +71,28 @@ const SeatLayout = () => {
       if(!selectedSeats.includes(seatId) && selectedSeats.length > 4){
         return toast("You can only select 5 seats")
       }
+      if(occupiedSeats.includes(seatId)){
+        return toast('This seat is Already booked')
+      }
       setSelectedSeats(prev => prev.includes(seatId) ? prev.filter(seat => seat !== seatId) : [...prev,seatId])
+    }
+
+    const bookTickets = async() =>{
+      try {
+        if(!user) return toast.error('Please login to Proceed')
+        if(!selectedTime ||  selectedSeats.length==0) return toast.error('Please Select the seats and time')
+        const {data} = await axios.post('/api/bookings/create',{showId: selectedTime.showId , selectedSeats},{headers:{
+          Authorization: `Bearer ${await getToken()}`}})
+
+        if(data.success){
+          window.location.href = data.url;
+        }
+        else{
+          toast.error(data.message)
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
  
 
@@ -54,7 +102,10 @@ const SeatLayout = () => {
           {Array.from({length: count} ,(_,i) =>{
             const seatId = `${row}${i+1}`;
             return (
-              <button key={seatId} onClick={()=> handleSeatClick(seatId)} className={`h-8 w-8 rounded border border-rose-400/60 cursor-pointer ${selectedSeats.includes(seatId) && "bg-rose-400 text-white"}`}>{seatId}</button>
+              <button key={seatId} onClick={()=> handleSeatClick(seatId)} className={`h-8 w-8 rounded border border-rose-400/60 cursor-pointer 
+              ${selectedSeats.includes(seatId) && "bg-rose-400 text-white"} 
+              ${occupiedSeats.includes(seatId) && "bg-rose-400/50 opacity-50"}
+              `}>{seatId}</button>
             )
           })}
         </div>
@@ -94,7 +145,7 @@ const SeatLayout = () => {
           ))}
         </div>
         </div>
-        <button onClick={handleProceed}  className='flex items-center justify-center mt-15 gap-3 bg-rose-600  w-50 h-10 rounded-md cursor-pointer hover:bg-rose-600/60 transition duration-300'>
+        <button onClick={bookTickets}  className='flex items-center justify-center mt-15 gap-3 bg-rose-600  w-50 h-10 rounded-md cursor-pointer hover:bg-rose-600/60 transition duration-300'>
           Proceed to CheckOut
           <ArrowRightIcon strokeWidth={3} className='w-4 h-4 relative top-[2px]'/>
         </button>
